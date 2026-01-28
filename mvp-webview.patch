@@ -1,0 +1,541 @@
+diff --git a/src/pages.json b/src/pages.json
+index 5d2b1aa..3b7f5b1 100644
+--- a/src/pages.json
++++ b/src/pages.json
+@@ -1,7 +1,80 @@
+ {
+   "pages": [
+     {
+-      "path": "pages/index/index",
+-      "style": {
+-        "navigationBarTitleText": "首页"
+-      }
++      "path": "pages/guide/index",
++      "style": { "navigationBarTitleText": "电子导游" }
++    },
++    {
++      "path": "pages/webview/index",
++      "style": { "navigationBarTitleText": "加载中" }
++    },
++    {
++      "path": "pages/info/list",
++      "style": { "navigationBarTitleText": "官方信息" }
++    },
++    {
++      "path": "pages/info/detail",
++      "style": { "navigationBarTitleText": "详情" }
++    },
++    {
++      "path": "pages/notice/list",
++      "style": { "navigationBarTitleText": "通知" }
++    },
++    {
++      "path": "pages/notice/detail",
++      "style": { "navigationBarTitleText": "通知详情" }
++    },
++    {
++      "path": "pages/donate/index",
++      "style": { "navigationBarTitleText": "李氏祠堂捐款" }
++    },
++    {
++      "path": "pages/donate/rank",
++      "style": { "navigationBarTitleText": "捐款排行榜" }
++    },
++    {
++      "path": "pages/more/index",
++      "style": { "navigationBarTitleText": "更多" }
+     }
+-  ]
++  ],
++  "tabBar": {
++    "color": "#666666",
++    "selectedColor": "#111111",
++    "backgroundColor": "#ffffff",
++    "borderStyle": "black",
++    "list": [
++      { "pagePath": "pages/guide/index", "text": "导游" },
++      { "pagePath": "pages/webview/index", "text": "购票" },
++      { "pagePath": "pages/more/index", "text": "更多" }
++    ]
++  },
++  "globalStyle": {
++    "backgroundColor": "#f7f8fa",
++    "navigationBarBackgroundColor": "#ffffff",
++    "navigationBarTextStyle": "black"
++  }
+ }
+diff --git a/src/pages/index/index.vue b/src/pages/index/index.vue
+index 2a7ad4b..d1e5d55 100644
+--- a/src/pages/index/index.vue
++++ b/src/pages/index/index.vue
+@@ -1,11 +1,58 @@
+ <template>
+   <view class="page">
+-    <text>景区电子导游首页</text>
++    <view class="card">
++      <view class="h1">景区小程序（MVP）</view>
++      <view class="desc">预算 3000 的最小实现：导游/购票/公告/通知/捐款</view>
++      <view class="btns">
++        <button class="btn" @click="goGuide">电子导游</button>
++        <button class="btn outline" @click="goTicket">立即购票</button>
++      </view>
++    </view>
++
++    <view class="card" style="margin-top:20rpx;">
++      <view class="h2">快捷入口</view>
++      <view class="grid">
++        <view class="item" @click="goInfo">官方信息</view>
++        <view class="item" @click="goNotice">通知</view>
++        <view class="item" @click="goDonate">李氏祠堂捐款</view>
++        <view class="item" @click="goRank">捐款排行榜</view>
++      </view>
++    </view>
+   </view>
+ </template>
+ <script>
+-export default {}
++import { LINKS } from '@/common/links'
++export default {
++  methods: {
++    goGuide() { uni.switchTab({ url: '/pages/guide/index' }) },
++    goTicket() { uni.switchTab({ url: '/pages/webview/index' }) },
++    goInfo() { uni.navigateTo({ url: '/pages/info/list' }) },
++    goNotice() { uni.navigateTo({ url: '/pages/notice/list' }) },
++    goDonate() { uni.navigateTo({ url: '/pages/donate/index' }) },
++    goRank() { uni.navigateTo({ url: '/pages/donate/rank' }) }
++  }
++}
+ </script>
+ <style>
+-.page{padding:30rpx;}
++.page{padding:28rpx;min-height:100vh;box-sizing:border-box;background:#f7f8fa;}
++.card{background:#fff;border-radius:20rpx;padding:26rpx;}
++.h1{font-size:40rpx;font-weight:800;color:#111;}
++.desc{margin-top:10rpx;font-size:26rpx;color:#666;line-height:1.6;}
++.btns{display:flex;gap:18rpx;margin-top:18rpx;}
++.btn{flex:1;border-radius:16rpx;background:#111;color:#fff;font-size:30rpx;}
++.btn.outline{background:#fff;color:#111;border:2rpx solid #111;}
++.h2{font-size:30rpx;font-weight:700;color:#111;}
++.grid{display:flex;flex-wrap:wrap;margin-top:16rpx;gap:12rpx;}
++.item{width:calc(50% - 6rpx);padding:20rpx;border-radius:16rpx;background:#f3f4f6;color:#111;font-size:28rpx;}
+ </style>
+diff --git a/src/common/links.js b/src/common/links.js
+new file mode 100644
+index 0000000..f944a9a
+--- /dev/null
++++ b/src/common/links.js
+@@ -0,0 +1,18 @@
++// 统一管理所有 H5 链接，后期替换真实链接只改这里
++export const LINKS = {
++  GUIDE: {
++    TAQINGGONG: 'https://mall.leyoobao.com/H5-MAP/free/index.html?sid=2066',
++    MINGDAOGONG: 'https://mall.leyoobao.com/H5-MAP/free/index.html?sid=2057'
++  },
++  // 购票占位链接（你后续替换成真实票务 H5）
++  TICKET: 'https://example.com/ticket',
++  // 如果未来捐款也有 H5，可放这里；目前先做原生占位页
++  DONATE_H5: ''
++}
+diff --git a/src/pages/guide/index.vue b/src/pages/guide/index.vue
+new file mode 100644
+index 0000000..54ac501
+--- /dev/null
++++ b/src/pages/guide/index.vue
+@@ -0,0 +1,83 @@
++<template>
++  <view class="page">
++    <view class="card">
++      <view class="h1">电子导游</view>
++      <view class="desc">选择讲解点进入 H5 导游（最省钱、最稳）</view>
++    </view>
++
++    <view class="list">
++      <view class="item" @click="open('TAQINGGONG')">
++        <view class="name">太清宫</view>
++        <view class="sub">H5 导游</view>
++      </view>
++      <view class="item" @click="open('MINGDAOGONG')">
++        <view class="name">明道宫</view>
++        <view class="sub">H5 导游</view>
++      </view>
++    </view>
++
++    <view class="tip">
++      WebView 域名需在小程序后台配置业务域名：mall.leyoobao.com
++    </view>
++  </view>
++</template>
++
++<script>
++import { LINKS } from '@/common/links'
++export default {
++  methods: {
++    open(key) {
++      const url = LINKS.GUIDE[key]
++      uni.navigateTo({ url: `/pages/webview/index?title=${encodeURIComponent('电子导游')}&url=${encodeURIComponent(url)}` })
++    }
++  }
++}
++</script>
++
++<style>
++.page{padding:28rpx;min-height:100vh;box-sizing:border-box;background:#f7f8fa;}
++.card{background:#fff;border-radius:20rpx;padding:26rpx;}
++.h1{font-size:40rpx;font-weight:800;color:#111;}
++.desc{margin-top:10rpx;font-size:26rpx;color:#666;line-height:1.6;}
++.list{margin-top:18rpx;}
++.item{background:#fff;border-radius:18rpx;padding:22rpx;margin-bottom:14rpx;}
++.name{font-size:32rpx;font-weight:800;color:#111;}
++.sub{margin-top:8rpx;font-size:26rpx;color:#666;}
++.tip{margin-top:16rpx;font-size:24rpx;color:#999;line-height:1.5;}
++</style>
+diff --git a/src/pages/webview/index.vue b/src/pages/webview/index.vue
+new file mode 100644
+index 0000000..4d00335
+--- /dev/null
++++ b/src/pages/webview/index.vue
+@@ -0,0 +1,60 @@
++<template>
++  <view class="page">
++    <web-view :src="src"></web-view>
++  </view>
++</template>
++
++<script>
++import { LINKS } from '@/common/links'
++export default {
++  data() {
++    return { src: LINKS.TICKET }
++  },
++  onLoad(query) {
++    // 既可当“购票 Tab”页（默认票务链接），也可通用打开任意 H5（导游/公告/票务等）
++    if (query && query.url) {
++      this.src = decodeURIComponent(query.url)
++    }
++    if (query && query.title) {
++      uni.setNavigationBarTitle({ title: decodeURIComponent(query.title) })
++    } else {
++      uni.setNavigationBarTitle({ title: '购票' })
++    }
++  }
++}
++</script>
++
++<style>
++.page{height:100vh;background:#fff;}
++</style>
+diff --git a/src/pages/more/index.vue b/src/pages/more/index.vue
+new file mode 100644
+index 0000000..d8dbb7a
+--- /dev/null
++++ b/src/pages/more/index.vue
+@@ -0,0 +1,77 @@
++<template>
++  <view class="page">
++    <view class="card">
++      <view class="h1">更多</view>
++      <view class="desc">官方信息、通知、捐款等功能入口</view>
++    </view>
++
++    <view class="list">
++      <view class="row" @click="go('/pages/info/list')">
++        <view class="t">官方信息发布</view>
++        <view class="s">公告/活动/政策</view>
++      </view>
++      <view class="row" @click="go('/pages/notice/list')">
++        <view class="t">通知</view>
++        <view class="s">购票成功/活动提醒/紧急通知</view>
++      </view>
++      <view class="row" @click="go('/pages/donate/index')">
++        <view class="t">李氏祠堂捐款</view>
++        <view class="s">支持扫码直达</view>
++      </view>
++      <view class="row" @click="go('/pages/donate/rank')">
++        <view class="t">捐款排行榜</view>
++        <view class="s">捐得越多越靠前</view>
++      </view>
++    </view>
++  </view>
++</template>
++
++<script>
++export default {
++  methods: {
++    go(url) { uni.navigateTo({ url }) }
++  }
++}
++</script>
++
++<style>
++.page{padding:28rpx;min-height:100vh;box-sizing:border-box;background:#f7f8fa;}
++.card{background:#fff;border-radius:20rpx;padding:26rpx;}
++.h1{font-size:40rpx;font-weight:800;color:#111;}
++.desc{margin-top:10rpx;font-size:26rpx;color:#666;line-height:1.6;}
++.list{margin-top:18rpx;}
++.row{background:#fff;border-radius:18rpx;padding:22rpx;margin-bottom:14rpx;}
++.t{font-size:30rpx;font-weight:800;color:#111;}
++.s{margin-top:8rpx;font-size:26rpx;color:#666;}
++</style>
+diff --git a/src/common/mock/data.js b/src/common/mock/data.js
+new file mode 100644
+index 0000000..3e2cd15
+--- /dev/null
++++ b/src/common/mock/data.js
+@@ -0,0 +1,49 @@
++export const mockAnnouncements = [
++  {
++    id: 'a1',
++    title: '景区公告：开放时间调整',
++    time: '2026-01-28',
++    content: '示例：因维护需要，部分区域开放时间调整，请以现场指引为准。'
++  },
++  {
++    id: 'a2',
++    title: '活动预告：周末文化讲解',
++    time: '2026-02-02',
++    content: '示例：本周末将开展文化讲解活动，欢迎参与。'
++  }
++]
++
++export const mockNotices = [
++  {
++    id: 'n1',
++    title: '购票成功通知（示例）',
++    time: '2026-01-28',
++    content: '示例：您已购票成功，请在入园时出示二维码/订单。'
++  },
++  {
++    id: 'n2',
++    title: '紧急通知（示例）',
++    time: '2026-01-28',
++    content: '示例：因天气原因临时关闭部分区域，请注意安全。'
++  }
++]
++
++export const mockDonateRank = [
++  { name: '游客A', amount: 200 },
++  { name: '游客B', amount: 120 },
++  { name: '游客C', amount: 50 }
++]
+diff --git a/src/pages/info/list.vue b/src/pages/info/list.vue
+new file mode 100644
+index 0000000..3a23104
+--- /dev/null
++++ b/src/pages/info/list.vue
+@@ -0,0 +1,61 @@
++<template>
++  <view class="page">
++    <view class="item" v-for="x in list" :key="x.id" @click="open(x.id)">
++      <view class="t">{{x.title}}</view>
++      <view class="s">{{x.time}}</view>
++    </view>
++  </view>
++</template>
++
++<script>
++import { mockAnnouncements } from '@/common/mock/data'
++export default {
++  data() { return { list: mockAnnouncements } },
++  methods: {
++    open(id) { uni.navigateTo({ url: `/pages/info/detail?id=${id}` }) }
++  }
++}
++</script>
++
++<style>
++.page{padding:28rpx;min-height:100vh;background:#f7f8fa;box-sizing:border-box;}
++.item{background:#fff;border-radius:18rpx;padding:22rpx;margin-bottom:14rpx;}
++.t{font-size:30rpx;font-weight:800;color:#111;}
++.s{margin-top:8rpx;font-size:26rpx;color:#666;}
++</style>
+diff --git a/src/pages/info/detail.vue b/src/pages/info/detail.vue
+new file mode 100644
+index 0000000..287f3af
+--- /dev/null
++++ b/src/pages/info/detail.vue
+@@ -0,0 +1,64 @@
++<template>
++  <view class="page">
++    <view class="card">
++      <view class="h1">{{item.title}}</view>
++      <view class="time">{{item.time}}</view>
++      <view class="content">{{item.content}}</view>
++    </view>
++  </view>
++</template>
++
++<script>
++import { mockAnnouncements } from '@/common/mock/data'
++export default {
++  data() { return { item: {} } },
++  onLoad(q) {
++    const id = q && q.id
++    this.item = mockAnnouncements.find(x => x.id === id) || { title: '未找到', time: '', content: '' }
++  }
++}
++</script>
++
++<style>
++.page{padding:28rpx;min-height:100vh;background:#f7f8fa;box-sizing:border-box;}
++.card{background:#fff;border-radius:20rpx;padding:26rpx;}
++.h1{font-size:34rpx;font-weight:900;color:#111;}
++.time{margin-top:10rpx;font-size:24rpx;color:#999;}
++.content{margin-top:18rpx;font-size:28rpx;color:#333;line-height:1.75;white-space:pre-wrap;}
++</style>
+diff --git a/src/pages/notice/list.vue b/src/pages/notice/list.vue
+new file mode 100644
+index 0000000..a99b4cf
+--- /dev/null
++++ b/src/pages/notice/list.vue
+@@ -0,0 +1,61 @@
++<template>
++  <view class="page">
++    <view class="item" v-for="x in list" :key="x.id" @click="open(x.id)">
++      <view class="t">{{x.title}}</view>
++      <view class="s">{{x.time}}</view>
++    </view>
++  </view>
++</template>
++
++<script>
++import { mockNotices } from '@/common/mock/data'
++export default {
++  data() { return { list: mockNotices } },
++  methods: {
++    open(id) { uni.navigateTo({ url: `/pages/notice/detail?id=${id}` }) }
++  }
++}
++</script>
++
++<style>
++.page{padding:28rpx;min-height:100vh;background:#f7f8fa;box-sizing:border-box;}
++.item{background:#fff;border-radius:18rpx;padding:22rpx;margin-bottom:14rpx;}
++.t{font-size:30rpx;font-weight:800;color:#111;}
++.s{margin-top:8rpx;font-size:26rpx;color:#666;}
++</style>
+diff --git a/src/pages/notice/detail.vue b/src/pages/notice/detail.vue
+new file mode 100644
+index 0000000..aebbff2
+--- /dev/null
++++ b/src/pages/notice/detail.vue
+@@ -0,0 +1,64 @@
++<template>
++  <view class="page">
++    <view class="card">
++      <view class="h1">{{item.title}}</view>
++      <view class="time">{{item.time}}</view>
++      <view class="content">{{item.content}}</view>
++    </view>
++  </view>
++</template>
++
++<script>
++import { mockNotices } from '@/common/mock/data'
++export default {
++  data() { return { item: {} } },
++  onLoad(q) {
++    const id = q && q.id
++    this.item = mockNotices.find(x => x.id === id) || { title: '未找到', time: '', content: '' }
++  }
++}
++</script>
++
++<style>
++.page{padding:28rpx;min-height:100vh;background:#f7f8fa;box-sizing:border-box;}
++.card{background:#fff;border-radius:20rpx;padding:26rpx;}
++.h1{font-size:34rpx;font-weight:900;color:#111;}
++.time{margin-top:10rpx;font-size:24rpx;color:#999;}
++.content{margin-top:18rpx;font-size:28rpx;color:#333;line-height:1.75;white-space:pre-wrap;}
++</style>
+diff --git a/src/pages/donate/index.vue b/src/pages/donate/index.vue
+new file mode 100644
+index 0000000..d5b5a02
+--- /dev/null
++++ b/src/pages/donate/index.vue
+@@ -0,0 +1,94 @@
++<template>
++  <view class="page">
++    <view class="card">
++      <view class="h1">李氏祠堂捐款</view>
++      <view class="desc">最小实现：先做页面+排行占位，后续接微信支付与落库</view>
++
++      <view class="field">
++        <view class="label">捐款金额（元）</view>
++        <input class="inp" type="number" v-model="amount" placeholder="例如：10" />
++      </view>
++
++      <button class="btn" @click="donate">立即捐款（占位）</button>
++      <button class="btn outline" @click="goRank">查看排行榜</button>
++    </view>
++
++    <view class="tip">
++      上线闭环版本建议：微信云开发 + 微信支付回调写入捐款记录 + 排行榜聚合查询。
++    </view>
++  </view>
++</template>
++
++<script>
++export default {
++  data() { return { amount: '' } },
++  methods: {
++    donate() {
++      const n = Number(this.amount || 0)
++      if (!n || n <= 0) {
++        return uni.showToast({ title: '请输入金额', icon: 'none' })
++      }
++      uni.showModal({
++        title: '占位提示',
++        content: `将来这里会拉起微信支付。当前金额：${n} 元`,
++        showCancel: false
++      })
++    },
++    goRank() { uni.navigateTo({ url: '/pages/donate/rank' }) }
++  }
++}
++</script>
++
++<style>
++.page{padding:28rpx;min-height:100vh;background:#f7f8fa;box-sizing:border-box;}
++.card{background:#fff;border-radius:20rpx;padding:26rpx;}
++.h1{font-size:34rpx;font-weight:900;color:#111;}
++.desc{margin-top:10rpx;font-size:26rpx;color:#666;line-height:1.6;}
++.field{margin-top:18rpx;}
++.label{font-size:26rpx;color:#333;}
++.inp{margin-top:10rpx;background:#f3f4f6;border-radius:16rpx;padding:20rpx;font-size:28rpx;}
++.btn{margin-top:16rpx;border-radius:16rpx;background:#111;color:#fff;font-size:30rpx;}
++.btn.outline{background:#fff;color:#111;border:2rpx solid #111;}
++.tip{margin-top:16rpx;font-size:24rpx;color:#999;line-height:1.5;}
++</style>
+diff --git a/src/pages/donate/rank.vue b/src/pages/donate/rank.vue
+new file mode 100644
+index 0000000..89fd8f4
+--- /dev/null
++++ b/src/pages/donate/rank.vue
+@@ -0,0 +1,57 @@
++<template>
++  <view class="page">
++    <view class="item" v-for="(x,i) in list" :key="i">
++      <view class="left">
++        <view class="rank">NO.{{i+1}}</view>
++        <view class="name">{{x.name}}</view>
++      </view>
++      <view class="amount">¥ {{x.amount}}</view>
++    </view>
++  </view>
++</template>
++
++<script>
++import { mockDonateRank } from '@/common/mock/data'
++export default {
++  data() { return { list: mockDonateRank } }
++}
++</script>
++
++<style>
++.page{padding:28rpx;min-height:100vh;background:#f7f8fa;box-sizing:border-box;}
++.item{background:#fff;border-radius:18rpx;padding:22rpx;margin-bottom:14rpx;display:flex;align-items:center;justify-content:space-between;}
++.left{display:flex;align-items:center;gap:14rpx;}
++.rank{font-size:24rpx;color:#999;}
++.name{font-size:30rpx;font-weight:900;color:#111;}
++.amount{font-size:30rpx;font-weight:900;color:#111;}
++</style>

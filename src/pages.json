@@ -1,10 +1,30 @@
 ﻿{
-  ""pages"": [
-    {
-      ""path"": ""pages/index/index"",
-      ""style"": {
-        ""navigationBarTitleText"": ""鐢靛瓙瀵兼父""
-      }
-    }
-  ]
+  "pages": [
+    { "path": "pages/guide/index", "style": { "navigationBarTitleText": "鐢靛瓙瀵兼父" } },
+    { "path": "pages/webview/index", "style": { "navigationBarTitleText": "鍔犺浇涓? } },
+    { "path": "pages/info/list", "style": { "navigationBarTitleText": "瀹樻柟淇℃伅" } },
+    { "path": "pages/info/detail", "style": { "navigationBarTitleText": "璇︽儏" } },
+    { "path": "pages/notice/list", "style": { "navigationBarTitleText": "閫氱煡" } },
+    { "path": "pages/notice/detail", "style": { "navigationBarTitleText": "閫氱煡璇︽儏" } },
+    { "path": "pages/donate/index", "style": { "navigationBarTitleText": "鏉庢皬绁犲爞鎹愭" } },
+    { "path": "pages/donate/rank", "style": { "navigationBarTitleText": "鎹愭鎺掕姒? } },
+    { "path": "pages/more/index", "style": { "navigationBarTitleText": "鏇村" } },
+    { "path": "pages/index/index", "style": { "navigationBarTitleText": "棣栭〉" } }
+  ],
+  "tabBar": {
+    "color": "#666666",
+    "selectedColor": "#111111",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/guide/index", "text": "瀵兼父" },
+      { "pagePath": "pages/webview/index", "text": "璐エ" },
+      { "pagePath": "pages/more/index", "text": "鏇村" }
+    ]
+  },
+  "globalStyle": {
+    "backgroundColor": "#f7f8fa",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black"
+  }
 }
